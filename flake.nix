@@ -16,6 +16,8 @@
             nodejs_18  # O la versión que necesites
             yarn        # O usa npm si prefieres
             corepack    # Para manejar versiones de Yarn con `yarn set version stable`
+            nodePackages.typescript
+            nodePackages.typescript-language-server
           ];
         };
 
