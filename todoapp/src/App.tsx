@@ -106,6 +106,16 @@ function App() {
     return desc
   }
 
+  const handleUpdate = async (id: string) => {
+      if (token) {
+        await controller.updateTask(token, id)
+      }
+  }
+
+  const handleDelete = () => {
+
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       { !logged &&
@@ -162,7 +172,9 @@ function App() {
         5
       </div>
       <div>
-        {taskList.map((item : Task) => (
+        {taskList
+            .filter((item: Task) => !item.is_completed)
+            .map((item : Task) => (
             <div className="task-style">
                 <Button 
                     key={item.id} 
@@ -172,17 +184,15 @@ function App() {
                     <Typography sx={{ color: '#000' }} variant="h6">{item.title}</Typography>
                 </Button>
                  <Box sx={{ display: 'flex', gap: '10px' }}>
-                        <Button variant="contained">
+                        <Button variant="contained" color="error">
                           <DeleteIcon />
                         </Button>
-                        <Button variant="contained">
+                        <Button variant="contained" onClick={() => handleUpdate(String(item.id))}>
                           <CheckIcon />
                         </Button>
                     </Box>
             </div>
-        ))
-
-        }
+        ))}
       </div>
       <div style={{position: 'fixed', bottom: '3%', right: '3%'}}> 
         <Fab 
