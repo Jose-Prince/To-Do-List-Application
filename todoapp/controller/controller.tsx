@@ -92,9 +92,31 @@ async function getTaskList(token: string, limit: string, order: string, page: st
     }
 }
 
+async function updateTask(token: string, id: string) {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_HOST}/to-do/tasks/update/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error in request: ${response.status}`)
+        }
+
+        return await response.json()
+    } catch (error) {
+        console.error("Error in data", error)
+        throw error
+    }
+}
+
 export default {
     login,
     createTask,
     getTask,
-    getTaskList
+    getTaskList,
+    updateTask
 }
