@@ -25,14 +25,14 @@ function App() {
     title: "example",
     description: "N/A",
     is_completed: false,
-    created_at: "0/0/0"
+    created_at: "0/0/0T00:00"
   })
   const [taskList, setTaskList] = useState<Task[]>([{
       id: 2,
       title: "example",
       description: "N/A",
       is_completed: false,
-      created_at: "0/0/0"
+      created_at: "0/0/0T00:00"
   }])
 
   const handleChangeOrder = () => {
@@ -71,7 +71,7 @@ function App() {
   }
 
   const handleClick = async () => {
-      if (token != null) {
+      if (token) {
         await controller.createTask(title, token)
         handleClose()
       }
@@ -79,8 +79,10 @@ function App() {
 
   const handleClickTask = async (task: Task) => {
       setSee(true)
-      const todo = await controller.getTask(token, task.id)
-      setTaskData(todo.data.task)
+      if (token) {
+        const todo = await controller.getTask(token, String(task.id))
+        setTaskData(todo.data.task)
+      }
   }
 
   const convertToDate = (dateTime: string) => {
@@ -90,9 +92,8 @@ function App() {
   }
 
   const convertToTime = (dateTime: string) => {
-    const [hour, minute] = dateTime.split("T")[1].split(":")
-
-    return `${hour}:${minute}`
+        const [hour, minute] = taskData.created_at.split("T")[1].split(":")
+        return `${hour}:${minute}`
   }
 
   const nullableDesc = (desc: string | null) => {
