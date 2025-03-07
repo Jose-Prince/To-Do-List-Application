@@ -6,6 +6,8 @@ import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 import { Task } from './types'
 import './App.css'
 
@@ -92,7 +94,7 @@ function App() {
   }
 
   const convertToTime = (dateTime: string) => {
-        const [hour, minute] = taskData.created_at.split("T")[1].split(":")
+        const [hour, minute] = dateTime.split("T")[1].split(":")
         return `${hour}:${minute}`
   }
 
@@ -162,9 +164,21 @@ function App() {
       <div>
         {taskList.map((item : Task) => (
             <div className="task-style">
-                <Button key={item.id} sx={{width: '100%'}} onClick={() => handleClickTask(item)}>
-                    {item.title}
+                <Button 
+                    key={item.id} 
+                    sx={{ width: "100%", justifyContent: 'space-between', display: 'flex', alignItems: 'center' }} 
+                    onClick={() => handleClickTask(item)}
+                >
+                    <Typography sx={{ color: '#000' }} variant="h6">{item.title}</Typography>
                 </Button>
+                 <Box sx={{ display: 'flex', gap: '10px' }}>
+                        <Button variant="contained">
+                          <DeleteIcon />
+                        </Button>
+                        <Button variant="contained">
+                          <CheckIcon />
+                        </Button>
+                    </Box>
             </div>
         ))
 
