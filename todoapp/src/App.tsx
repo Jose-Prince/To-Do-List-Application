@@ -6,6 +6,7 @@ import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
 import TopRow from './components/topRow'
 import PageManager from './components/pageManager'
+import TextAtributte from './components/textAtributte'
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { Task, Meta } from './types'
@@ -137,6 +138,14 @@ function App() {
         setObtainedID(String(id))
    }
 
+   const yesnoAnswer = (bool: boolean) => {
+        if (bool) {
+            return "Sí"
+        } else {
+            return "No"
+        }
+   }
+
     
   return (
     <div style={{ position: 'relative' }}>
@@ -148,7 +157,6 @@ function App() {
       <PageManager metaData={metaData} setPage={setPage} setOrder={setOrder} setLimit={setLimit} page={page} token={token}/>
       <div>
         {taskList
-            .filter((item: Task) => !item.is_completed)
             .map((item : Task) => (
             <div className="task-style">
                 <Button 
@@ -162,9 +170,11 @@ function App() {
                         <Button variant="contained" color="error" onClick={() => handleOpenDelete(String(item.id))}>
                           <DeleteIcon />
                         </Button>
-                        <Button variant="contained" onClick={() => handleUpdate(String(item.id))}>
-                          <CheckIcon />
-                        </Button>
+                        {!item.is_completed &&
+                            <Button variant="contained" onClick={() => handleUpdate(String(item.id))}>
+                              <CheckIcon />
+                            </Button>
+                        }
                     </Box>
             </div>
         ))}
@@ -212,18 +222,10 @@ function App() {
         <Box className="modal-create">
             <Typography sx={{color: '#000'}} variant="h4">{taskData.title}</Typography>
             <Divider sx={{marginBottom: '15px'}}/>
-            <div style={{display:'flex', gap: '15px'}}>
-                <Typography sx={{color: '#000'}} variant="h6">Descripción:</Typography>
-                <Typography sx={{color: '#000'}} variant="h6">{nullableDesc(taskData.description)}</Typography>
-            </div>
-            <div style={{display:'flex', gap: '15px'}}>
-                <Typography sx={{color: '#000'}} variant="h6">Fecha creada:</Typography>
-                <Typography sx={{color: '#000'}} variant="h6">{convertToDate(taskData.created_at)}</Typography>
-            </div>
-            <div style={{display:'flex', gap: '15px'}}>
-                <Typography sx={{color: '#000'}} variant="h6">Hora creada:</Typography>
-                <Typography sx={{color: '#000'}} variant="h6">{convertToTime(taskData.created_at)}</Typography>
-            </div>
+            <TextAtributte label="Descripción:" content={nullableDesc(taskData.description)}/>
+            <TextAtributte label="Completado:" content={yesnoAnswer(taskData.is_completed)}/>
+            <TextAtributte label="Fecha de creación:" content={convertToDate(taskData.created_at)}/>
+            <TextAtributte label="Hora de creación:" content={convertToTime(taskData.created_at)}/>
         </Box>
       </Modal>
 
