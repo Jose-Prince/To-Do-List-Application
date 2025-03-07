@@ -1,10 +1,16 @@
 import {TextField, Button, Typography} from "@mui/material/"
 import { useState } from "react"
-import controller from "../../controller/controller"
+import controller from "../controller/controller"
+import { useAuth } from "../hooks/AuthContext"
 import "./login.css"
 
-export default function Login() {
+type Props = {
+    setLogged: (value : boolean) => void
+}
 
+export default function Login({ setLogged }: Props) {
+
+    const { login } = useAuth()
     const [email, setEmail] = useState("")
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,7 +19,8 @@ export default function Login() {
 
     const handleClick = async () => {
         const res = await controller.login(email)
-        console.log(res)
+        login(res.data.token)
+        setLogged(true)
     }
 
     return(
