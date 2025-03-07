@@ -113,10 +113,32 @@ async function updateTask(token: string, id: string) {
     }
 }
 
+async function deleteTask(token: string, id: string) {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_HOST}/to-do/tasks/delete/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error in request: ${response.status}`)
+        }
+
+        return await response.json()
+    } catch (error) {
+        console.error("Error in data", error)
+        throw error
+    }
+}
+
 export default {
     login,
     createTask,
     getTask,
     getTaskList,
-    updateTask
+    updateTask,
+    deleteTask
 }
