@@ -1,11 +1,18 @@
 import {TextField, Button, Typography} from "@mui/material/"
+import { useState } from "react"
 import controller from "../../controller/controller"
 import "./login.css"
 
 export default function Login() {
 
+    const [email, setEmail] = useState("")
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value)
+    }
+
     const handleClick = async () => {
-        const res = await controller.login("joseprince148@gmail.com")
+        const res = await controller.login(email)
         console.log(res)
     }
 
@@ -23,6 +30,8 @@ export default function Login() {
                     id="user_login" 
                     label="Email" 
                     variant="outlined"
+                    value={email}
+                    onChange={handleChange}
                     sx={{
                         backgroundColor: "white"
                     }}/>
