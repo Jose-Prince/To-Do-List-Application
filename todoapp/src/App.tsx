@@ -35,13 +35,7 @@ function App() {
     is_completed: false,
     created_at: "0/0/0T00:00"
   })
-  const [taskList, setTaskList] = useState<Task[]>([{
-      id: 2,
-      title: "example",
-      description: "N/A",
-      is_completed: false,
-      created_at: "0/0/0T00:00"
-  }])
+  const [taskList, setTaskList] = useState<Task[] | null>(null)
 
   const [creation, setCreation] = useState(false)
   const [update, setUpdate] = useState(false)
@@ -73,7 +67,7 @@ function App() {
     }
 
     fetchData()
-  }, [order, limit, page])
+  }, [order, limit, page, token])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
@@ -162,7 +156,7 @@ function App() {
       <Divider/>
       <PageManager metaData={metaData} setPage={setPage} setOrder={setOrder} setLimit={setLimit} page={page} token={token}/>
       <div>
-        {taskList
+        {taskList && taskList
             .map((item : Task) => (
             <div className="task-style">
                 <Button 
