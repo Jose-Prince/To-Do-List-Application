@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Login from './views/login.tsx'
 import { useAuth } from './hooks/AuthContext'
-import { Fab, Modal, Typography, Box, Divider, TextField, Button } from '@mui/material/'
+import { Fab, Modal, Typography, Box, Divider, TextField, Button, Snackbar, Alert } from '@mui/material/'
 import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
 import TopRow from './components/topRow'
@@ -43,6 +43,9 @@ function App() {
       created_at: "0/0/0T00:00"
   }])
 
+  const [creation, setCreation] = useState(false)
+  const [update, setUpdate] = useState(false)
+  const [elimination, setElimination] = useState(false)
   
 
   const handleOpen = () => {
@@ -82,6 +85,7 @@ function App() {
         const list = await controller.getTaskList(token, String(limit), order, String(page))
         setTaskList(list.data)
         setMetaData(list.meta)
+        setCreation(true)
         handleClose()
       }
   }
@@ -120,6 +124,7 @@ function App() {
         const list = await controller.getTaskList(token, String(limit), order, String(page))
         setTaskList(list.data)    
         setMetaData(list.meta)
+        setUpdate(true)
 
       }
   }
@@ -132,6 +137,7 @@ function App() {
         setMetaData(list.meta)
     }
     setDelTask(false)
+    setElimination(true)
   }
    const handleOpenDelete = (id: string) => {
         setDelTask(true)
@@ -246,6 +252,22 @@ function App() {
             </div>
         </Box>
       </Modal>
+
+      <Snackbar open={creation} autoHideDuration={3000} onClose={() => setCreation(false)}>
+        <Alert severity="success" onClose={() => setCreation(false)}>
+            Task created!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={update} autoHideDuration={3000} onClose={() => setUpdate(false)}>
+        <Alert severity="success" onClose={() => setUpdate(false)}>
+            Task completed!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={elimination} autoHideDuration={3000} onClose={() => setElimination(false)}>
+        <Alert severity="warning" onClose={() => setElimination(false)}>
+            Task eliminated!
+        </Alert>
+      </Snackbar>
     </div>
   )
 }
