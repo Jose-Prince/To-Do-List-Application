@@ -53,7 +53,28 @@ async function createTask(email: string, title: string, token: string) {
 async function getTask(token: string, id: string) {
     try {
         const response = await fetch(`${import.meta.env.VITE_API_HOST}/to-do/tasks/${id}`, {
-            method: "POST",
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error in request: ${response.status}`)
+        }
+
+        return await response.json()
+    } catch (error) {
+        console.error("Error in data", error)
+        throw error
+    }
+}
+
+async function getTaskList(token: string, limit: string, order: string, page: string) {
+    try {
+        const response = await fetch(`${import.meta.env.VITE_API_HOST}/to-do/tasks?limit=${limit}&order=${order}&page=${page}`, {
+            method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -74,5 +95,6 @@ async function getTask(token: string, id: string) {
 export default {
     login,
     createTask,
-    getTask
+    getTask,
+    getTaskList
 }
