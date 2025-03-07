@@ -78,6 +78,9 @@ function App() {
   const handleClick = async () => {
       if (token) {
         await controller.createTask(title, token)
+        const list = await controller.getTaskList(token, String(limit), order, String(page))
+        setTaskList(list.data)
+        setMetaData(list.meta)
         handleClose()
       }
   }
@@ -112,12 +115,20 @@ function App() {
   const handleUpdate = async (id: string) => {
       if (token) {
         await controller.updateTask(token, id)
+
+        const list = await controller.getTaskList(token, String(limit), order, String(page))
+        setTaskList(list.data)    
+        setMetaData(list.meta)
+
       }
   }
 
   const handleDelete = async () => {
     if (token) {
         await controller.deleteTask(token, obtainedID)
+        const list = await controller.getTaskList(token, String(limit), order, String(page))
+        setTaskList(list.data)    
+        setMetaData(list.meta)
     }
     setDelTask(false)
   }
@@ -167,6 +178,8 @@ function App() {
             <Add />
           </Fab>
       </div>
+
+      {/*Modal for create task*/}
       <Modal
         open={open}
         onClose={handleClose}
@@ -190,6 +203,8 @@ function App() {
             </Button>
         </Box>
       </Modal>
+
+      {/*Modal for Task details*/}
       <Modal 
         open={see}
         onClose={handleCloseTask}
@@ -211,6 +226,8 @@ function App() {
             </div>
         </Box>
       </Modal>
+
+      {/*Modal for deleting task*/}
       <Modal
         open={delTask}
         onClose={handleCloseDelete}

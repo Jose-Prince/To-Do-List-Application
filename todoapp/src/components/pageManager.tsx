@@ -10,7 +10,7 @@ type Props = {
     setOrder: (value: string) => void,
     setPage: (value: number) => void,
     page: number,
-    token: string
+    token: string | null
 }
 
 export default function PageManager({metaData, setLimit, setOrder, setPage, page, token}: Props) {
