@@ -1,3 +1,5 @@
+import  getTokenInfo from '../hooks/TokenDecode'
+
 async function login(email: string): Promise<any> {
 
     const body = {
@@ -23,9 +25,11 @@ async function login(email: string): Promise<any> {
 
 }
 
-async function createTask(email: string, title: string, token: string) {
+async function createTask(title: string, token: string) {
+    const data = getTokenInfo(token)
+    console.log(data)
     const body = {
-        user_email: email,
+        user_email: data.email,
         title: title
     }
 
