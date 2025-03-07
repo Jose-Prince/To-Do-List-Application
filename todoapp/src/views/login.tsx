@@ -10,17 +10,24 @@ type Props = {
 
 export default function Login({ setLogged }: Props) {
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
     const { login } = useAuth()
     const [email, setEmail] = useState("")
+    const [emailError, setEmailError] = useState(false)
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
+        const value = event.target.value
+        setEmail(value)
+        setEmailError(!emailRegex.test(value))
     }
 
     const handleClick = async () => {
-        const res = await controller.login(email)
-        login(res.data.token)
-        setLogged(true)
+        if (!emailError && emailRegex.test(email)) {
+            const res = await controller.login(email)
+            login(res.data.token)
+            setLogged(true)
+        }
     }
 
     return(
@@ -39,12 +46,15 @@ export default function Login({ setLogged }: Props) {
                     variant="outlined"
                     value={email}
                     onChange={handleChange}
+                    error={emailError}
+                    helperText={emailError ? "Use a valid email" : ""}
                     sx={{
                         backgroundColor: "white"
                     }}/>
                 <Button 
                     variant="contained"
                     onClick={handleClick}
+                    disabled={emailError || email === ""}
                 >
                     Start
                 </Button>

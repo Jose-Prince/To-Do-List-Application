@@ -154,7 +154,7 @@ function App() {
 
     
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       { !logged &&
         <Login setLogged={setLogged} />
       }
