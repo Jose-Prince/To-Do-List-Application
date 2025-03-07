@@ -15,17 +15,24 @@ function App() {
 
   const [title, setTitle] = useState("")
   const [open, setOpen] = useState(false)
+  const [see, setSee] = useState(false)
   const [logged, setLogged] = useState(false)
   const [order, setOrder] = useState("descending")
   const [limit, setLimit] = useState(5)
   const [page, setPage] = useState(1)
+  const [taskData, setTaskData] = useState<Task>({
+    id: 2,
+    title: "example",
+    description: "N/A",
+    is_completed: false,
+    created_at: "0/0/0"
+  })
   const [taskList, setTaskList] = useState<Task[]>([{
       id: 2,
       title: "example",
       description: "N/A",
       is_completed: false,
       created_at: "0/0/0"
-
   }])
 
   const handleChangeOrder = () => {
@@ -41,6 +48,7 @@ function App() {
       setTitle("")
   }
   const handleClose = () => setOpen(false)
+  const handleCloseTask = () => setSee(false)
   const { token } = useAuth()
 
   useEffect(() => {
@@ -67,6 +75,32 @@ function App() {
         await controller.createTask(title, token)
         handleClose()
       }
+  }
+
+  const handleClickTask = async (task: Task) => {
+      setSee(true)
+      const todo = await controller.getTask(token, task.id)
+      setTaskData(todo.data.task)
+  }
+
+  const convertToDate = (dateTime: string) => {
+    const [year, month, day] = dateTime.split("T")[0].split("-")
+
+    return `${day}/${month}/${year}`
+  }
+
+  const convertToTime = (dateTime: string) => {
+    const [hour, minute] = dateTime.split("T")[1].split(":")
+
+    return `${hour}:${minute}`
+  }
+
+  const nullableDesc = (desc: string | null) => {
+    if (!desc) {
+        return "Sin descripción"
+    } 
+
+    return desc
   }
 
   return (
@@ -127,7 +161,7 @@ function App() {
       <div>
         {taskList.map((item : Task) => (
             <div className="task-style">
-                <Button key={item.id} sx={{width: '100%'}}>
+                <Button key={item.id} sx={{width: '100%'}} onClick={() => handleClickTask(item)}>
                     {item.title}
                 </Button>
             </div>
@@ -165,6 +199,27 @@ function App() {
             > 
                 create
             </Button>
+        </Box>
+      </Modal>
+      <Modal 
+        open={see}
+        onClose={handleCloseTask}
+      >
+        <Box className="modal-create">
+            <Typography sx={{color: '#000'}} variant="h4">{taskData.title}</Typography>
+            <Divider sx={{marginBottom: '15px'}}/>
+            <div style={{display:'flex', gap: '15px'}}>
+                <Typography sx={{color: '#000'}} variant="h6">Descripción:</Typography>
+                <Typography sx={{color: '#000'}} variant="h6">{nullableDesc(taskData.description)}</Typography>
+            </div>
+            <div style={{display:'flex', gap: '15px'}}>
+                <Typography sx={{color: '#000'}} variant="h6">Fecha creada:</Typography>
+                <Typography sx={{color: '#000'}} variant="h6">{convertToDate(taskData.created_at)}</Typography>
+            </div>
+            <div style={{display:'flex', gap: '15px'}}>
+                <Typography sx={{color: '#000'}} variant="h6">Hora creada:</Typography>
+                <Typography sx={{color: '#000'}} variant="h6">{convertToTime(taskData.created_at)}</Typography>
+            </div>
         </Box>
       </Modal>
     </div>
