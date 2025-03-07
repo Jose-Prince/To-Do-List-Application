@@ -1,7 +1,14 @@
 import {TextField, Button, Typography} from "@mui/material/"
+import controller from "../../controller/controller"
 import "./login.css"
 
 export default function Login() {
+
+    const handleClick = async () => {
+        const res = await controller.login("joseprince148@gmail.com")
+        console.log(res)
+    }
+
     return(
         <div className="blur-effect">
             <div className="container-elements">
@@ -19,7 +26,12 @@ export default function Login() {
                     sx={{
                         backgroundColor: "white"
                     }}/>
-                <Button variant="contained">Start</Button>
+                <Button 
+                    variant="contained"
+                    onClick={handleClick}
+                >
+                    Start
+                </Button>
             </div>
         </div>
     )
