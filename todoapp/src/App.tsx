@@ -4,17 +4,21 @@ import { useAuth } from './hooks/AuthContext'
 import { Fab, Modal, Typography, Box, Divider, TextField, Button } from '@mui/material/'
 import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import TopRow from './components/topRow'
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import { Task } from './types'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { Task, Meta } from './types'
 import './App.css'
 
 function App() {
 
-  const numberList = [5,10,15,20]
-
+  const [metaData, setMetaData] = useState<Meta>({
+      pages: 0,
+      next: null,
+      previous: null
+  })
   const [title, setTitle] = useState("")
   const [open, setOpen] = useState(false)
   const [see, setSee] = useState(false)
@@ -39,13 +43,7 @@ function App() {
       created_at: "0/0/0T00:00"
   }])
 
-  const handleChangeOrder = () => {
-      if (order === "ascending") {
-        setOrder("descending")
-      } else {
-        setOrder("ascending")
-      }
-  }
+  
 
   const handleOpen = () => {
       setOpen(true)
@@ -66,6 +64,8 @@ function App() {
             setLogged(true)
             const list = await controller.getTaskList(token, String(limit), order, String(page))
             setTaskList(list.data)
+            console.log(list.meta)
+            setMetaData(list.meta)
         }
     
     }
@@ -128,60 +128,59 @@ function App() {
         setObtainedID(String(id))
    }
 
+    const handleNextPage = () => {
+        if (metaData.next) {
+            const urlParams = new URLSearchParams(metaData.next.split('?')[1])
+            
+            const limit = urlParams.get('limit');
+            const order = urlParams.get('order');
+
+            if (limit && order && page && token) {
+                setLimit(Number(limit))
+                setOrder(order)
+                setPage(page+1)
+
+                controller.getTaskList(token, limit, order, String(page))
+            }
+        }
+    }
+
+    const handlePreviousPage = () => {
+        if (metaData.previous) {
+            const urlParams = new URLSearchParams(metaData.previous.split('?')[1])
+            
+            const limit = urlParams.get('limit');
+            const order = urlParams.get('order');
+
+            if (limit && order && page && token) {
+                setLimit(Number(limit))
+                setOrder(order)
+                setPage(page-1)
+
+                controller.getTaskList(token, limit, order, String(page))
+            }
+        }
+    }
+
   return (
     <div style={{ position: 'relative' }}>
       { !logged &&
         <Login setLogged={setLogged} />
       }
-      <div className="top-display">
-        <Typography 
-          style={{color: 'black'}}
-          variant="h4"
-        >
-          List of tasks
-        </Typography>
-
-        <div className="top-display">
-            <Typography 
-              style={{color: 'black'}}
-              variant="h6"
-              sx={{marginRight: '5px'}}
-            >
-              Max tasks:
-            </Typography>
-            <TextField
-                id="select-max-task-display"
-                select
-                defaultValue="5"
-                slotProps={{
-                    select: {
-                        native: true,
-                    },
-                }}
-                variant='standard'
-                sx={{marginRight: '10px'}}
-            >
-                {numberList.map((option) => (
-                    <option key={option} value={option} onClick={() => setLimit(option)}>
-                        {option}
-                    </option>
-                ))
-                } 
-            </TextField>
-            <Button onClick={handleChangeOrder}>
-                { order === "descending" 
-                    ? <ArrowDownwardIcon/>
-                    : <ArrowUpwardIcon/>
-
-                }
-                
-            </Button>
-        </div>
-        
-      </div>
+      <TopRow order={order} setOrder={setOrder} setLimit={setLimit}/>
       <Divider/>
-      <div>
-        5
+      <div className="split-buttons" style={{marginBottom: '30px'}}>
+      { metaData.previous &&
+
+        <Button variant="contained" onClick={handlePreviousPage}>
+            <ArrowBackIosNewIcon/>
+        </Button>
+      }
+      { metaData.next !== null &&
+        <Button variant="contained" onClick={handleNextPage}>
+            <ArrowForwardIosIcon/>
+        </Button>
+      }
       </div>
       <div>
         {taskList

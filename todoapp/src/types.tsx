@@ -5,3 +5,9 @@ export type Task = {
     is_completed: boolean,
     created_at: string
 }
+
+export type Meta = {
+    pages: number,
+    next: string | null,
+    previous: string | null
+}
