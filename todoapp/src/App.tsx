@@ -5,10 +5,9 @@ import { Fab, Modal, Typography, Box, Divider, TextField, Button } from '@mui/ma
 import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
 import TopRow from './components/topRow'
+import PageManager from './components/pageManager'
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Task, Meta } from './types'
 import './App.css'
 
@@ -64,7 +63,6 @@ function App() {
             setLogged(true)
             const list = await controller.getTaskList(token, String(limit), order, String(page))
             setTaskList(list.data)
-            console.log(list.meta)
             setMetaData(list.meta)
         }
     
@@ -128,40 +126,7 @@ function App() {
         setObtainedID(String(id))
    }
 
-    const handleNextPage = () => {
-        if (metaData.next) {
-            const urlParams = new URLSearchParams(metaData.next.split('?')[1])
-            
-            const limit = urlParams.get('limit');
-            const order = urlParams.get('order');
-
-            if (limit && order && page && token) {
-                setLimit(Number(limit))
-                setOrder(order)
-                setPage(page+1)
-
-                controller.getTaskList(token, limit, order, String(page))
-            }
-        }
-    }
-
-    const handlePreviousPage = () => {
-        if (metaData.previous) {
-            const urlParams = new URLSearchParams(metaData.previous.split('?')[1])
-            
-            const limit = urlParams.get('limit');
-            const order = urlParams.get('order');
-
-            if (limit && order && page && token) {
-                setLimit(Number(limit))
-                setOrder(order)
-                setPage(page-1)
-
-                controller.getTaskList(token, limit, order, String(page))
-            }
-        }
-    }
-
+    
   return (
     <div style={{ position: 'relative' }}>
       { !logged &&
@@ -169,19 +134,7 @@ function App() {
       }
       <TopRow order={order} setOrder={setOrder} setLimit={setLimit}/>
       <Divider/>
-      <div className="split-buttons" style={{marginBottom: '30px'}}>
-      { metaData.previous &&
-
-        <Button variant="contained" onClick={handlePreviousPage}>
-            <ArrowBackIosNewIcon/>
-        </Button>
-      }
-      { metaData.next !== null &&
-        <Button variant="contained" onClick={handleNextPage}>
-            <ArrowForwardIosIcon/>
-        </Button>
-      }
-      </div>
+      <PageManager metaData={metaData} setPage={setPage} setOrder={setOrder} setLimit={setLimit} page={page} token={token}/>
       <div>
         {taskList
             .filter((item: Task) => !item.is_completed)
