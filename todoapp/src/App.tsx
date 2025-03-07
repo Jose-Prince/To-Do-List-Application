@@ -18,8 +18,10 @@ function App() {
   const [title, setTitle] = useState("")
   const [open, setOpen] = useState(false)
   const [see, setSee] = useState(false)
+  const [delTask, setDelTask] = useState(false)
   const [logged, setLogged] = useState(false)
   const [order, setOrder] = useState("descending")
+  const [obtainedID, setObtainedID] = useState("")
   const [limit, setLimit] = useState(5)
   const [page, setPage] = useState(1)
   const [taskData, setTaskData] = useState<Task>({
@@ -51,7 +53,10 @@ function App() {
   }
   const handleClose = () => setOpen(false)
   const handleCloseTask = () => setSee(false)
+  const handleCloseDelete = () => setDelTask(false)
+
   const { token } = useAuth()
+
 
   useEffect(() => {
 
@@ -112,9 +117,16 @@ function App() {
       }
   }
 
-  const handleDelete = () => {
-
+  const handleDelete = async () => {
+    if (token) {
+        await controller.deleteTask(token, obtainedID)
+    }
+    setDelTask(false)
   }
+   const handleOpenDelete = (id: string) => {
+        setDelTask(true)
+        setObtainedID(String(id))
+   }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -184,7 +196,7 @@ function App() {
                     <Typography sx={{ color: '#000' }} variant="h6">{item.title}</Typography>
                 </Button>
                  <Box sx={{ display: 'flex', gap: '10px' }}>
-                        <Button variant="contained" color="error">
+                        <Button variant="contained" color="error" onClick={() => handleOpenDelete(String(item.id))}>
                           <DeleteIcon />
                         </Button>
                         <Button variant="contained" onClick={() => handleUpdate(String(item.id))}>
@@ -244,6 +256,22 @@ function App() {
             <div style={{display:'flex', gap: '15px'}}>
                 <Typography sx={{color: '#000'}} variant="h6">Hora creada:</Typography>
                 <Typography sx={{color: '#000'}} variant="h6">{convertToTime(taskData.created_at)}</Typography>
+            </div>
+        </Box>
+      </Modal>
+      <Modal
+        open={delTask}
+        onClose={handleCloseDelete}
+      >
+        <Box className="modal-create" sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Typography variant="h5">Do you want to delete the task?</Typography>
+            <div className="split-buttons">
+                <Button variant="contained" onClick={handleCloseDelete}>
+                    <Typography>Cancelar</Typography>
+                </Button>
+                <Button variant="contained" color="error" onClick={handleDelete}>
+                    <Typography>Eliminar</Typography>
+                </Button>
             </div>
         </Box>
       </Modal>
