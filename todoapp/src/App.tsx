@@ -1,20 +1,41 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Login from './views/login.tsx'
 import { useAuth } from './hooks/AuthContext'
 import { Fab, Modal, Typography, Box, Divider, TextField, Button } from '@mui/material/'
 import  Add  from '@mui/icons-material/Add'
 import controller from './controller/controller'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Task } from './types'
 import './App.css'
 
 function App() {
 
+  const numberList = [5,10,15,20]
+
   const [title, setTitle] = useState("")
   const [open, setOpen] = useState(false)
-  const [count, setCount] = useState(0)
   const [logged, setLogged] = useState(false)
-  
+  const [order, setOrder] = useState("descending")
+  const [limit, setLimit] = useState(5)
+  const [page, setPage] = useState(1)
+  const [taskList, setTaskList] = useState<Task[]>([{
+      id: 2,
+      title: "example",
+      description: "N/A",
+      is_completed: false,
+      created_at: "0/0/0"
+
+  }])
+
+  const handleChangeOrder = () => {
+      if (order === "ascending") {
+        setOrder("descending")
+      } else {
+        setOrder("ascending")
+      }
+  }
+
   const handleOpen = () => {
       setOpen(true)
       setTitle("")
@@ -23,10 +44,19 @@ function App() {
   const { token } = useAuth()
 
   useEffect(() => {
-    if ( token ) {
-        setLogged(true)
+
+    const fetchData = async () => {
+
+        if ( token ) {
+            setLogged(true)
+            const list = await controller.getTaskList(token, String(limit), order, String(page))
+            setTaskList(list.data)
+        }
+    
     }
-  }, [])
+
+    fetchData()
+  }, [order, limit, page])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
@@ -44,25 +74,67 @@ function App() {
       { !logged &&
         <Login setLogged={setLogged} />
       }
+      <div className="top-display">
+        <Typography 
+          style={{color: 'black'}}
+          variant="h4"
+        >
+          List of tasks
+        </Typography>
+
+        <div className="top-display">
+            <Typography 
+              style={{color: 'black'}}
+              variant="h6"
+              sx={{marginRight: '5px'}}
+            >
+              Max tasks:
+            </Typography>
+            <TextField
+                id="select-max-task-display"
+                select
+                defaultValue="5"
+                slotProps={{
+                    select: {
+                        native: true,
+                    },
+                }}
+                variant='standard'
+                sx={{marginRight: '10px'}}
+            >
+                {numberList.map((option) => (
+                    <option key={option} value={option} onClick={() => setLimit(option)}>
+                        {option}
+                    </option>
+                ))
+                } 
+            </TextField>
+            <Button onClick={handleChangeOrder}>
+                { order === "descending" 
+                    ? <ArrowDownwardIcon/>
+                    : <ArrowUpwardIcon/>
+
+                }
+                
+            </Button>
+        </div>
+        
+      </div>
+      <Divider/>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        5
       </div>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div>
+        {taskList.map((item : Task) => (
+            <div className="task-style">
+                <Button key={item.id} sx={{width: '100%'}}>
+                    {item.title}
+                </Button>
+            </div>
+        ))
+
+        }
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
       <div style={{position: 'fixed', bottom: '3%', right: '3%'}}> 
         <Fab 
             color="primary" 
